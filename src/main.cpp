@@ -6,6 +6,7 @@
 
 #include "../include/Shader.h"
 #include "../include/Sphere.h"
+#include "../include/Electrosphere.h"
 #include "../include/VertexBuffer.h"
 #include "../include/VertexArray.h"
 
@@ -47,12 +48,19 @@ int main(void)
 
     Shader shader("shaders/test.vs","shaders/test.fs");
     Sphere bola(5, 36, 18);
+    Electrosphere eletrosfera0(5, 1, 1, 1);
    
     VertexBuffer bufferArray(bola.getVertices(), bola.getVertexSize());
     bufferArray.bind();
     VertexArray vs(0,3,0,(const GLvoid*)0);
     VertexBuffer bufferIndex(bola.getIndices(), bola.getIndexSize());
     bufferIndex.bindElements();
+
+    VertexBuffer bufferArray2(eletrosfera0.getVertices(), eletrosfera0.getVertexSize());
+    bufferArray2.bind();
+    VertexArray vs2(0,3,0,(const GLvoid*)0);
+    VertexBuffer bufferIndex2(eletrosfera0.getIndices(), eletrosfera0.getIndexSize());
+    bufferIndex2.bindElements();
    
     cameraX = 0.0f; cameraY = 0.0f; cameraZ = 8.0f;
 
@@ -95,6 +103,11 @@ int main(void)
         bufferIndex.bindElements();
         glDrawElements(GL_TRIANGLES, bola.getIndexSize(), GL_UNSIGNED_INT, NULL); 
         vs.unbind();
+
+        vs2.bind();
+        bufferIndex2.bindElements();
+        glDrawElements(GL_TRIANGLES, eletrosfera0.getIndexSize(), GL_UNSIGNED_INT, NULL); 
+        vs2.unbind();        
 
         glfwSwapBuffers(gWindow);
     }
