@@ -13,6 +13,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+//includes
+#include "../include/VertexArray.h"
+#include "../include/VertexBuffer.h"
 
 class Electrosphere{
     private:
@@ -20,10 +23,15 @@ class Electrosphere{
         std::vector<GLuint> indices;
         std::vector<GLfloat> vertices;
         std::vector<GLfloat> normals;
+        VertexBuffer *vbo, *ibo;
+        VertexArray *vao;
     public:
-        Electrosphere(GLfloat radiusAtom, GLfloat radiusTube, GLfloat passTorus, GLfloat passTube);
+        Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusTube, GLfloat passTorus, GLfloat passTube);
         ~Electrosphere();
         void show(
+            glm::mat4 view,
+            glm::mat4 projection,
+            glm::mat4 model,
             glm::vec3 translate = glm::vec3(1.0f),
             glm::vec3 scale = glm::vec3(1.0f),
             glm::vec3 rotate = glm::vec3(1.0f),

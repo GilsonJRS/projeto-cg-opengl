@@ -1,9 +1,10 @@
 #include "../include/Sphere.h"
-#include "../include/VertexArray.h"
-#include "../include/VertexBuffer.h"
-#include <cmath>
 
-Sphere::Sphere(GLfloat radius,GLfloat verticalResolution, GLfloat horizontalResolution){
+Sphere::Sphere(GLuint program, GLfloat radius,GLfloat verticalResolution, GLfloat horizontalResolution){
+    //shader program
+    this->shader_id = program;
+
+    //generating sphere
     float x, y, z, xy;
     float lengthInv = 1.0f / radius;
 
@@ -50,16 +51,33 @@ Sphere::Sphere(GLfloat radius,GLfloat verticalResolution, GLfloat horizontalReso
             }
         }
     }
+    this->vbo = new VertexBuffer(this->getVertices(), this->getVertexSize());
+    this->vbo->bind();
+    this->vao = new VertexArray(0,3,0,(const GLvoid*)0);
+    this->ibo = new VertexBuffer(this->getIndices(), this->getIndexSize());
 }
 
 Sphere::~Sphere(){
-
 }
-/*void Sphere::show(
-    glm::vec3 translate = glm::vec3(1.0f),
-    glm::vec3 scale = glm::vec3(1.0f),
-    glm::vec3 rotate = glm::vec3(1.0f),
-    GLfloat rotate_degree = 0.0f
-){
 
-}*/
+void Sphere::show(
+    glm::mat4 view,
+    glm::mat4 projection,
+    glm::mat4 model,
+    glm::vec3 translate,
+    glm::vec3 scale,
+    glm::vec3 rotate,
+    GLfloat rotate_degree
+){
+    model = glm::rotate(model, glm::radians(rotate_degree), rotate);
+    model = glm::scale(model, scale);
+    model = glm::translate(model, translate);
+    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "mv_matrix"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "vm_matrix"), 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projection));  
+    //std::cout<<"a"<<std::endl;
+    this->vao->bind();
+    this->ibo->bindElements();
+    glDrawElements(GL_TRIANGLES, this->getIndexSize(), GL_UNSIGNED_INT, NULL);
+    this->vao->unbind();
+}

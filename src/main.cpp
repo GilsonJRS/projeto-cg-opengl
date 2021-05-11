@@ -47,20 +47,8 @@ int main(void)
     }
 
     Shader shader("shaders/test.vs","shaders/test.fs");
-    Sphere bola(5, 36, 18);
-    Electrosphere eletrosfera0(5, 1, 1, 1);
-   
-    VertexBuffer bufferArray(bola.getVertices(), bola.getVertexSize());
-    bufferArray.bind();
-    VertexArray vs(0,3,0,(const GLvoid*)0);
-    VertexBuffer bufferIndex(bola.getIndices(), bola.getIndexSize());
-    bufferIndex.bindElements();
-
-    VertexBuffer bufferArray2(eletrosfera0.getVertices(), eletrosfera0.getVertexSize());
-    bufferArray2.bind();
-    VertexArray vs2(0,3,0,(const GLvoid*)0);
-    VertexBuffer bufferIndex2(eletrosfera0.getIndices(), eletrosfera0.getIndexSize());
-    bufferIndex2.bindElements();
+    Sphere bola(shader.getProgramId(),5, 36, 18);
+    Electrosphere eletrosfera0(shader.getProgramId(), 5, 1, 1, 1);
    
     cameraX = 0.0f; cameraY = 0.0f; cameraZ = 8.0f;
 
@@ -95,23 +83,11 @@ int main(void)
         mvStack.push(mvStack.top());
         mvStack.top() *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));//position
         
-        glUniformMatrix4fv(mvLoc, 1, GL_FALSE, value_ptr(mvStack.top()));
-        glUniformMatrix4fv(vmLoc, 1, GL_FALSE, value_ptr(vmMat));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, value_ptr(projMat));
-        
-        vs.bind();
-        bufferIndex.bindElements();
-        glDrawElements(GL_TRIANGLES, bola.getIndexSize(), GL_UNSIGNED_INT, NULL); 
-        vs.unbind();
-
-        vs2.bind();
-        bufferIndex2.bindElements();
-        glDrawElements(GL_TRIANGLES, eletrosfera0.getIndexSize(), GL_UNSIGNED_INT, NULL); 
-        vs2.unbind();        
+        bola.show(vmMat, projMat, mvStack.top(), glm::vec3());
+        eletrosfera0.show(vmMat, projMat, mvStack.top());
 
         glfwSwapBuffers(gWindow);
     }
-
     glfwTerminate();
     return 0;
 }

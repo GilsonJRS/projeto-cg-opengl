@@ -3,7 +3,11 @@
 #include "../include/VertexBuffer.h"
 #include <cmath>
 
-Electrosphere::Electrosphere(GLfloat radiusAtom, GLfloat radiusTube, GLfloat passTorus, GLfloat passTube){
+Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusTube, GLfloat passTorus, GLfloat passTube){
+    //shader program
+    this->shader_id = program;
+
+    //generating electrosphere
     for(GLfloat grausTorus = 0.f; grausTorus < 360.f; grausTorus += passTorus) {
         GLfloat cosTorus = cos(glm::radians(grausTorus));
         GLfloat sinTorus = sin(glm::radians(grausTorus));
@@ -54,8 +58,35 @@ Electrosphere::Electrosphere(GLfloat radiusAtom, GLfloat radiusTube, GLfloat pas
             }
             this->indices.push_back(squareIdx - toGoFirstTorusSegment);
     }
+
+    this->vbo = new VertexBuffer(this->getVertices(), this->getVertexSize());
+    this->vbo->bind();
+    this->vao = new VertexArray(0,3,0,(const GLvoid*)0);
+    this->ibo = new VertexBuffer(this->getIndices(), this->getIndexSize());
 }
 
 Electrosphere::~Electrosphere(){
 
+}
+
+void Electrosphere::show(
+    glm::mat4 view,
+    glm::mat4 projection,
+    glm::mat4 model,
+    glm::vec3 translate,
+    glm::vec3 scale,
+    glm::vec3 rotate,
+    GLfloat rotate_degree
+){
+    model = glm::rotate(model, glm::radians(rotate_degree), rotate);
+    model = glm::scale(model, scale);
+    model = glm::translate(model, translate);  
+    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "mv_matrix"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "vm_matrix"), 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projection));  
+    //std::cout<<"a"<<std::endl;
+    this->vao->bind();
+    this->ibo->bindElements();
+    glDrawElements(GL_TRIANGLES, this->getIndexSize(), GL_UNSIGNED_INT, NULL);
+    this->vao->unbind();
 }
