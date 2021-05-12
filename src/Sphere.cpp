@@ -1,12 +1,15 @@
 #include "../include/Sphere.h"
 
-Sphere::Sphere(GLuint program, GLfloat radius,GLfloat verticalResolution, GLfloat horizontalResolution){
+Sphere::Sphere(GLuint program, GLfloat radius,GLfloat verticalResolution, GLfloat horizontalResolution, glm::vec3 color){
     //shader program
     this->shader_id = program;
 
     //generating sphere
     float x, y, z, xy;
     float lengthInv = 1.0f / radius;
+
+    //sphere color
+    this->color = color;
 
     float sectorStep = 2 * M_PI / horizontalResolution;
     float stackStep = M_PI / verticalResolution;
@@ -75,6 +78,7 @@ void Sphere::show(
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "mv_matrix"), 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "vm_matrix"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projection));  
+    glUniform3fv(glGetUniformLocation(this->shader_id, "color"), 1, glm::value_ptr(this->color));
     //std::cout<<"a"<<std::endl;
     this->vao->bind();
     this->ibo->bindElements();

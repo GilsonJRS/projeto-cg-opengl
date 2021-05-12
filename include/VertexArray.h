@@ -1,3 +1,11 @@
+/***
+ * 
+ * Class to handle with VAOs
+ * 
+ * Autors: Gilson & Brendon
+ * Date: 13/04/2021
+ * 
+***/
 #ifndef VERTEXARRAY_H
 #define VERTEXARRAY_H
 

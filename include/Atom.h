@@ -1,3 +1,12 @@
+/***
+ * 
+ * Class to create atoms using the class Spheres
+ * and Electrosphere
+ * 
+ * Autors: Gilson & Brendon
+ * Date: 13/04/2021
+ * 
+***/
 #ifndef ATOM_H
 #define ATOM_H
 
@@ -24,9 +33,14 @@ class Atom{
         Atom(
             GLuint program,
             GLfloat nucleusRadius,
-            GLuint numElectrons
+            GLuint numElectrons,
+            glm::vec3 nucleusColor,
+            glm::vec3 electrosphereColor,
+            glm::vec3 electronsColor
         );
         ~Atom();
+        //Function to render atom on screen using the show function
+        //of the subcomponents
         void show(
             glm::mat4 view,
             glm::mat4 projection,

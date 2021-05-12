@@ -12,6 +12,7 @@
 #include "../include/VertexArray.h"
 #include "../include/Camera.h"
 #include "../include/Atom.h"
+#include "../include/Nucleus.h"
 
 //GLEW
 #define GLEW_STATIC
@@ -48,8 +49,8 @@ int main(void)
     }
 
     Shader shader("shaders/test.vs","shaders/test.fs");
-    Atom atom(shader.getProgramId(), 5, 1);
-
+    Atom atom(shader.getProgramId(), 5, 1, glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
+    //Nucleus nucleo(shader.getProgramId(), 1, 20, 20);
     glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
 
     /* Loop until the user closes the window */
@@ -59,6 +60,8 @@ int main(void)
         glfwPollEvents();
 
         /* Render here */
+        
+        glClear(GL_DEPTH_BUFFER_BIT);
         glClear(GL_COLOR_BUFFER_BIT);
         shader.bind();  
         
@@ -77,9 +80,11 @@ int main(void)
         mvStack.push(mvStack.top());
         mvStack.top() *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));//position
         */
-
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
         atom.show(vmMat, projMat, glm::mat4(1.0f));
-        
+        //nucleo.show(vmMat, projMat, glm::mat4(1.0f));
+
         float mouse = 0.1f;
         double mouseX, mouseY;
         glfwGetCursorPos(gWindow, &mouseY, &mouseX);

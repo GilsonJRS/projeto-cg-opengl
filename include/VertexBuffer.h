@@ -1,3 +1,11 @@
+/***
+ * 
+ * Class to handle with buffers
+ * 
+ * Autors: Gilson & Brendon
+ * Date: 13/04/2021
+ * 
+***/
 #ifndef VERTEXBUFFER_H
 #define VERTEXBUFFER_H
 

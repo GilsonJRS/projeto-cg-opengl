@@ -1,3 +1,12 @@
+/***
+ * 
+ * Class to create and control the camera(view) and
+ * projection matrix
+ * 
+ * Autors: Gilson & Brendon
+ * Date: 13/04/2021
+ * 
+***/
 #ifndef CAMERA_H
 #define CAMERA_H
 

@@ -1,14 +1,20 @@
 #include "../include/Atom.h"
 
-Atom::Atom(GLuint program, GLfloat nucleusRadius, GLuint numElectrons) : 
-    nucleus{program,nucleusRadius,76,58}{
+Atom::Atom(
+    GLuint program,
+    GLfloat nucleusRadius,
+    GLuint numElectrons,
+    glm::vec3 nucleusColor,
+    glm::vec3 electrosphereColor,
+    glm::vec3 electronsColor
+):nucleus{program,nucleusRadius,76,58,nucleusColor}{
     this->numElectrons = numElectrons;
     this->shader_id = program;
     electrons.resize(numElectrons);
     electrosphere.resize(numElectrons);
     for(int i=0;i<numElectrons;i++){
-        electrons[i] = new Sphere(program, 2, 10, 5);
-        electrosphere[i] = new Electrosphere(program, 5, 1, 1, 1);
+        electrons[i] = new Sphere(program, 1, 20, 20);
+        electrosphere[i] = new Electrosphere(program, 5, 0.1, 1, 1);
     }
 }
 Atom::~Atom(){
