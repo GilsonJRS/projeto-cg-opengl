@@ -5,8 +5,9 @@ Camera::Camera(GLfloat aspect){
     this->cameraPosition = glm::vec3(0.0f, 0.0f,  10.0f);
     this->cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
     this->cameraUp = glm::vec3(0.0f, 1.0f,  0.0f);
+    this->FOV = 60.0f;
     this->viewMatrix = glm::lookAt(this->cameraPosition, this->cameraPosition + cameraFront, cameraUp);
-    this->projMatrix = glm::perspective(glm::radians(60.0f), viewportAspectRatio, 0.1f, 1000.0f);
+    this->projMatrix = glm::perspective(glm::radians(this->FOV), viewportAspectRatio, 0.1f, 1000.0f);
     this->horizontalAngle = 0.0f;
     this->verticalAngle = 0.0f;
 }

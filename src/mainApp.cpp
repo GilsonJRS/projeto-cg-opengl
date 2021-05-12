@@ -11,7 +11,6 @@
 #include "../include/VertexBuffer.h"
 #include "../include/VertexArray.h"
 #include "../include/Camera.h"
-#include "../include/Atom.h"
 
 //GLEW
 #define GLEW_STATIC
@@ -48,8 +47,9 @@ int main(void)
     }
 
     Shader shader("shaders/test.vs","shaders/test.fs");
-    Atom atom(shader.getProgramId(), 5, 1);
-
+    Sphere bola(shader.getProgramId(),5, 66, 48);
+    Electrosphere eletrosfera0(shader.getProgramId(), 5, 1, 1, 1);
+   
     glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
 
     /* Loop until the user closes the window */
@@ -77,9 +77,9 @@ int main(void)
         mvStack.push(mvStack.top());
         mvStack.top() *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));//position
         */
+        bola.show(vmMat, projMat, mvStack.top(), glm::vec3());
+        eletrosfera0.show(vmMat, projMat, mvStack.top());
 
-        atom.show(vmMat, projMat, glm::mat4(1.0f));
-        
         float mouse = 0.1f;
         double mouseX, mouseY;
         glfwGetCursorPos(gWindow, &mouseY, &mouseX);
