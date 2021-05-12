@@ -4,11 +4,13 @@
 #include <fstream>
 #include <stack>
 
+//Our libraries
 #include "../include/Shader.h"
 #include "../include/Sphere.h"
 #include "../include/Electrosphere.h"
 #include "../include/VertexBuffer.h"
 #include "../include/VertexArray.h"
+#include "../include/Camera.h"
 
 //GLEW
 #define GLEW_STATIC
@@ -21,8 +23,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 //Global Variables
-const int gWindowWidth  = 800;
-const int gWindowHeight = 600;
+int gWindowWidth  = 800;
+int gWindowHeight = 600;
 const char* TITLE = {"Atom model"};
 GLFWwindow* gWindow = NULL;
 GLfloat cameraX, cameraY, cameraZ;
@@ -31,12 +33,11 @@ glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 GLuint mvLoc, vmLoc, projLoc;
-int height, width;
 
 
 bool initOpenGL();
-
 void glfw_key(GLFWwindow *window, int key, int scancode, int action, int mode);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main(void)
 {
@@ -47,7 +48,7 @@ int main(void)
     }
 
     Shader shader("shaders/test.vs","shaders/test.fs");
-    Sphere bola(shader.getProgramId(),5, 36, 18);
+    Sphere bola(shader.getProgramId(),5, 66, 48);
     Electrosphere eletrosfera0(shader.getProgramId(), 5, 1, 1, 1);
    
     cameraX = 0.0f; cameraY = 0.0f; cameraZ = 8.0f;
@@ -59,11 +60,10 @@ int main(void)
     {
         /* Poll for and process events */
         glfwPollEvents();
-              
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
         shader.bind();  
-
+        
         //camera configs
         mvLoc = glGetUniformLocation(shader.getProgramId(), "mv_matrix");
         vmLoc = glGetUniformLocation(shader.getProgramId(), "vm_matrix");
@@ -73,8 +73,9 @@ int main(void)
         glm::mat4 mvT = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
         glm::mat4 vmMat = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         mvStack.push(mvT);
+        
         //perspective matrix
-        glfwGetFramebufferSize(gWindow, &width, &height);
+        glfwGetFramebufferSize(gWindow, &gWindowWidth, &gWindowHeight);
         GLfloat aspect = (GLfloat)gWindowWidth/(GLfloat)gWindowHeight;
         glm::mat4 projMat = glm::perspective(glm::radians(60.0f), aspect, 0.1f, 1000.0f);
         
@@ -118,7 +119,7 @@ bool initOpenGL()
 
     /* Make the window's context current */
     glfwMakeContextCurrent(gWindow);
-
+    glfwSetFramebufferSizeCallback(gWindow, framebuffer_size_callback);
     
     //Initialize GLEW
     glewExperimental = GL_TRUE;
@@ -137,7 +138,6 @@ void glfw_key(GLFWwindow *window, int key, int scancode, int action, int mode){
     
     if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(gWindow, GL_TRUE);
-
      if (key == GLFW_KEY_W && action == GLFW_PRESS)
         cameraPos += cameraSpeed + cameraFront;
     if (key == GLFW_KEY_S && action == GLFW_PRESS)
@@ -146,4 +146,11 @@ void glfw_key(GLFWwindow *window, int key, int scancode, int action, int mode){
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (key == GLFW_KEY_D && action == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height){
+    gWindowHeight = height;
+    gWindowWidth = width;
+    glViewport(0,0,width, height);
 }
