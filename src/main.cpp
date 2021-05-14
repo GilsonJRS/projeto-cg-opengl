@@ -63,7 +63,7 @@ int main(void)
         
         glClear(GL_DEPTH_BUFFER_BIT);
         glClear(GL_COLOR_BUFFER_BIT);
-        shader.bind();  
+          
         
         //camera configs
         mvLoc = glGetUniformLocation(shader.getProgramId(), "mv_matrix");
@@ -82,9 +82,9 @@ int main(void)
         */
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+        shader.bind();
         atom.show(vmMat, projMat, glm::mat4(1.0f));
-        //nucleo.show(vmMat, projMat, glm::mat4(1.0f));
-
+        
         float mouse = 0.1f;
         double mouseX, mouseY;
         glfwGetCursorPos(gWindow, &mouseY, &mouseX);

@@ -49,9 +49,10 @@ int main(void)
     }
 
     Shader shader("src/shaders/test.vs","src/shaders/test.fs");
-    Atom atom(shader.getProgramId(), 5, 1, glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
+    Atom atom(shader.getProgramId(), 3, 6, glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
     //Nucleus nucleo(shader.getProgramId(), 1, 20, 20);
     glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
+    GLfloat time;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(gWindow))
@@ -74,17 +75,12 @@ int main(void)
         glm::mat4 vmMat = camera.getViewMatrix();
         //perspective matrix
         glm::mat4 projMat = camera.getProjMatrix();
-        
-        mvStack.push(glm::mat4(1.0f));
-        /*mvStack.top() *= glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));//rotation
-        mvStack.push(mvStack.top());
-        mvStack.top() *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));//position
-        */
+
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-        atom.show(vmMat, projMat, glm::mat4(1.0f));
-        //nucleo.show(vmMat, projMat, glm::mat4(1.0f));
-
+        atom.show((float)glfwGetTime(),vmMat, projMat, glm::mat4(1.0f));
+        
+        //camera rotation
         float mouse = 0.1f;
         double mouseX, mouseY;
         glfwGetCursorPos(gWindow, &mouseY, &mouseX);

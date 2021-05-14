@@ -12,6 +12,7 @@
 
 //CPP libs
 #include <vector>
+#include <cstdlib>
 //GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -29,6 +30,7 @@ class Atom{
         Sphere nucleus;
         std::vector<Sphere *> electrons;
         std::vector<Electrosphere *> electrosphere;
+        std::vector<glm::mat4> models;
     public:
         Atom(
             GLuint program,
@@ -42,6 +44,7 @@ class Atom{
         //Function to render atom on screen using the show function
         //of the subcomponents
         void show(
+            GLfloat time,
             glm::mat4 view,
             glm::mat4 projection,
             glm::mat4 model,
