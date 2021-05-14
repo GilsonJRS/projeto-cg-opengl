@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <stack>
+#include <vector>
 
 //Our libraries
 #include "../include/Shader.h"
@@ -13,6 +14,8 @@
 #include "../include/Camera.h"
 #include "../include/Atom.h"
 #include "../include/Nucleus.h"
+#include "../include/Texture.h"
+
 
 //GLEW
 #define GLEW_STATIC
@@ -34,11 +37,38 @@ GLuint mvLoc, vmLoc, projLoc;
 Camera camera((GLfloat)gWindowWidth/(GLfloat)gWindowHeight);
 bool update = false;
 
+
 bool initOpenGL();
 void glfw_key(GLFWwindow *window, int key, int scancode, int action, int mode);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void cursorEnterCallBack(GLFWwindow* window, int entered);
+
+void drawBackground(Texture &textura, GLfloat height, GLfloat width){
+    std::vector <GLfloat> verticesBG = {
+        -width, height, 0.f,        0.f, 1.f,
+         width, height, 0.f,        1.f, 1.f,
+         width, -height, 0.f,       1.f, 0.f,
+        -width, -height, 0.f,       0.f, 0.f,
+    };
+
+    std::vector<GLuint> indicesBG = {0, 1, 2, 2, 0, 3};
+    
+    VertexBuffer *vbo = new VertexBuffer(verticesBG.data(), verticesBG.size()*sizeof(GLfloat));
+    VertexArray *vao = new VertexArray();
+    vao->attribPointer(0, 3, sizeof(GLfloat)*5, (const GLvoid*)0);
+    vao->attribPointer(1, 2, sizeof(GLfloat)*5, (const GLvoid*)(sizeof(GLfloat)*3));
+    VertexBuffer *ibo = new VertexBuffer(indicesBG.data(), indicesBG.size()*sizeof(GLuint));
+    vao->bind();
+    vbo->bind();
+    ibo->bindElements();
+    textura.bind();
+
+    glDrawElements(GL_TRIANGLES, indicesBG.size(), GL_UNSIGNED_INT, NULL);
+
+    vao->unbind();
+}
+
 
 int main(void)
 {
@@ -49,42 +79,47 @@ int main(void)
     }
 
     Shader shader("shaders/test.vs","shaders/test.fs");
+    Shader shaderTexture("shaders/texture.vs","shaders/texture.fs");
     Atom atom(shader.getProgramId(), 5, 1, glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
+    Texture fundo("../textures/andromedaWallpaper.jpg");
     //Nucleus nucleo(shader.getProgramId(), 1, 20, 20);
-    glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
 
-    /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(gWindow))
     {
-        /* Poll for and process events */
         glfwPollEvents();
-
-        /* Render here */
         
         glClear(GL_DEPTH_BUFFER_BIT);
         glClear(GL_COLOR_BUFFER_BIT);
-          
-        
-        //camera configs
-        mvLoc = glGetUniformLocation(shader.getProgramId(), "mv_matrix");
-        vmLoc = glGetUniformLocation(shader.getProgramId(), "vm_matrix");
-        projLoc = glGetUniformLocation(shader.getProgramId(), "proj_matrix");
-        
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+
         //build camera
         glm::mat4 vmMat = camera.getViewMatrix();
         //perspective matrix
         glm::mat4 projMat = camera.getProjMatrix();
+
+        //Se usa uma das duas, sem conjugar, funciona normal o background
+        glm:: mat4 model = glm::rotate(glm::mat4(1.f), glm::radians(-camera.getAngles()[0]), glm::vec3(0.f, 1.f, 0.f)); 
+        model = glm::rotate(model, glm::radians(-camera.getAngles()[1]), glm::vec3(1.f, 0.f, 0.f));
+        model = glm::translate(model, glm::vec3(camera.getPos()[0], camera.getPos()[1], -450.f));
+
+        shaderTexture.bind();
+        glUniformMatrix4fv(glGetUniformLocation(shaderTexture.getProgramId(), "mv_matrix"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(glGetUniformLocation(shaderTexture.getProgramId(), "vm_matrix"), 1, GL_FALSE, glm::value_ptr(vmMat));
+        glUniformMatrix4fv(glGetUniformLocation(shaderTexture.getProgramId(), "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projMat));  
+        //glUniform3fv(glGetUniformLocation(shaderTexture.getProgramId(), "colorSet"), 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 0.0f)));  
+        drawBackground(fundo, 400.f, 711.45f); //711 e 400 Textura escalonada proporcionalmente
         
         mvStack.push(glm::mat4(1.0f));
         /*mvStack.top() *= glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));//rotation
         mvStack.push(mvStack.top());
         mvStack.top() *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));//position
         */
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-        shader.bind();
-        atom.show(vmMat, projMat, glm::mat4(1.0f));
-        
+
+        shader.bind();  
+        atom.show(0, vmMat, projMat, glm::mat4(1.0f));
+        //nucleo.show(vmMat, projMat, glm::mat4(1.0f));
+
         float mouse = 0.1f;
         double mouseX, mouseY;
         glfwGetCursorPos(gWindow, &mouseY, &mouseX);
@@ -147,19 +182,23 @@ void glfw_key(GLFWwindow *window, int key, int scancode, int action, int mode){
     
     if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(gWindow, GL_TRUE);
-    if((key == GLFW_KEY_W && action == GLFW_REPEAT)||
-        (key == GLFW_KEY_W && action == GLFW_PRESS))
+    if(((key == GLFW_KEY_W && action == GLFW_REPEAT)||
+        (key == GLFW_KEY_W && action == GLFW_PRESS))&&
+        camera.getPos()[2] > 4.f)
         camera.updatePos(glm::vec3(0.0f,0.0f, -1.0f));
-    if((key == GLFW_KEY_S && action == GLFW_REPEAT)||
-        (key == GLFW_KEY_S && action == GLFW_PRESS))
+
+    if(((key == GLFW_KEY_S && action == GLFW_REPEAT)||
+        (key == GLFW_KEY_S && action == GLFW_PRESS))&&
+        (camera.getPos()[2] < 243.f))
         camera.updatePos(glm::vec3(0.0f,0.0f, +1.0f));
-    if((key == GLFW_KEY_A && action == GLFW_REPEAT)||
-        (key == GLFW_KEY_A && action == GLFW_PRESS))
+
+    if(((key == GLFW_KEY_A && action == GLFW_REPEAT)||
+        (key == GLFW_KEY_A && action == GLFW_PRESS)))
         camera.updatePos(glm::vec3(-1.0f,0.0f, 0.0f));
-    if((key == GLFW_KEY_D && action == GLFW_REPEAT)||
-        (key == GLFW_KEY_D && action == GLFW_PRESS))
-        camera.updatePos(glm::vec3(1.0f,0.0f, 0.0f));
     
+    if(((key == GLFW_KEY_D && action == GLFW_REPEAT)||
+        (key == GLFW_KEY_D && action == GLFW_PRESS)))
+        camera.updatePos(glm::vec3(1.0f,0.0f, 0.0f));   
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){

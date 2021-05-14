@@ -57,6 +57,8 @@ class Camera{
         glm::mat4 getViewMatrix();
         glm::mat4 getProjMatrix();
         glm::mat4 getOrientation();
-
+        glm::vec2 getAngles(){return glm::vec2(this->horizontalAngle, this->verticalAngle);};
+        glm::vec3 getPos(){return glm::vec3(this->cameraPosition);};
+        
 };
 #endif
