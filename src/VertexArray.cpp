@@ -25,6 +25,7 @@ void VertexArray::attribPointer(
  	const GLvoid * pointer){ 
     this->bind();
     glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, pointer);
+    glEnableVertexAttribArray(index);
     this->unbind();
 }
 

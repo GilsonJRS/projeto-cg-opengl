@@ -54,6 +54,12 @@ Sphere::Sphere(GLuint program, GLfloat radius,GLfloat verticalResolution, GLfloa
             }
         }
     }
+    /*
+    this->vbo = new VertexBuffer(this->getVertices(), this->getVertexSize());
+    this->vbo->bind();
+    this->vao = new VertexArray(0,3,0,(const GLvoid*)0);
+    this->ibo = new VertexBuffer(this->getIndices(), this->getIndexSize());
+    */
     this->vbo = new VertexBuffer(this->getVertices(), this->getVertexSize());
     this->vbo->bind();
     this->vao = new VertexArray(0,3,0,(const GLvoid*)0);

@@ -61,7 +61,7 @@ int main(void)
         glfwPollEvents();
 
         /* Render here */
-        
+        glEnable(GL_MULTISAMPLE);
         glClear(GL_DEPTH_BUFFER_BIT);
         glClear(GL_COLOR_BUFFER_BIT);
         shader.bind();  
@@ -103,6 +103,7 @@ bool initOpenGL()
         return false;
     }
     
+    glfwWindowHint(GLFW_SAMPLES, 10);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

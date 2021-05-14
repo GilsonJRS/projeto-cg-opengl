@@ -6,7 +6,8 @@
 Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusTube, GLfloat passTorus, GLfloat passTube){
     //shader program
     this->shader_id = program;
-
+    glm::vec3 p1, p2, p3,u, v, n;
+    GLfloat l;
     //generating electrosphere
     for(GLfloat grausTorus = 0.f; grausTorus < 360.f; grausTorus += passTorus) {
         GLfloat cosTorus = cos(glm::radians(grausTorus));
@@ -19,6 +20,28 @@ Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusT
             this->vertices.push_back((radiusAtom + radiusTube*cosTube)*sinTorus*4.22); //y. 4,22 vezes maior que o raio do Atomo
             this->vertices.push_back(radiusTube*sinTube); //z. Espessura da órbita dos elétrons
         }
+    }
+
+    for(int i=0;i<this->vertices.size()-9;i+=9){
+        p1 = glm::vec3(vertices[i], vertices[i+1], vertices[i+2]);
+        p2 = glm::vec3(vertices[i+3], vertices[i+4], vertices[i+5]);
+        p3 = glm::vec3(vertices[i+6], vertices[i+7], vertices[i+8]);
+        
+        u = p2 - p1;
+        v = p3 - p1;
+
+        n.x = (u.y * v.z) - (u.z * v.y);
+        n.y = (u.z * v.x) - (u.x * v.z);
+        n.z = (u.x * v.y) - (u.y * v.x);
+
+        l = (GLfloat)glm::sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+        n.x /= l;
+        n.y /= l;
+        n.y /= l;
+
+        normals.push_back(n.x);
+        normals.push_back(n.y);
+        normals.push_back(n.z);
     }
 
     int squaresPerSegment = (int)(360.f/passTube);
@@ -58,7 +81,7 @@ Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusT
             }
             this->indices.push_back(squareIdx - toGoFirstTorusSegment);
     }
-
+    
     this->vbo = new VertexBuffer(this->getVertices(), this->getVertexSize());
     this->vbo->bind();
     this->vao = new VertexArray(0,3,0,(const GLvoid*)0);
