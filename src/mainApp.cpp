@@ -55,6 +55,7 @@ int main(void)
     GLfloat time;
 
     /* Loop until the user closes the window */
+    GLfloat i=50.0f;
     while (!glfwWindowShouldClose(gWindow))
     {
         /* Poll for and process events */
@@ -78,7 +79,7 @@ int main(void)
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-        atom.show((float)glfwGetTime(),vmMat, projMat, glm::mat4(1.0f));
+        atom.show(camera.getPos(), glm::vec3(0.0f,50.0f,0.0f),(float)glfwGetTime(),vmMat, projMat, glm::mat4(1.0f));
         
         //camera rotation
         float mouse = 0.1f;

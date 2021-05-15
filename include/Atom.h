@@ -46,6 +46,8 @@ class Atom{
         //Function to render atom on screen using the show function
         //of the subcomponents
         void show(
+            glm::vec3 viewPos,
+            glm::vec3 lightPos,
             GLfloat time,
             glm::mat4 view,
             glm::mat4 projection,

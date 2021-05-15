@@ -34,6 +34,8 @@ Atom::~Atom(){
 
 }
 void Atom::show(
+    glm::vec3 viewPos,
+    glm::vec3 lightPos,
     GLfloat time,
     glm::mat4 view,
     glm::mat4 projection,
@@ -43,7 +45,7 @@ void Atom::show(
     glm::vec3 rotate,
     GLfloat rotate_degree
 ){
-    nucleus.show(view, projection, model);
+    nucleus.show(viewPos, lightPos,view, projection, model);
 
     GLfloat cosTorus = cos(glm::radians(this->graus2TranslateEletron));
     GLfloat sinTorus = sin(glm::radians(this->graus2TranslateEletron));
@@ -51,11 +53,11 @@ void Atom::show(
     this->graus2TranslateEletron = (this->graus2TranslateEletron + 8.f == 360.f) ? 0.f : this->graus2TranslateEletron + 8.f; 
 
     for(int i=0; i < this->numElectrons; i++){
-        electrons[i]->show(view, projection, 
+        electrons[i]->show(viewPos, lightPos, view, projection, 
                             glm::translate(models[i],
                             glm::vec3(this->radius*cosTorus*1.22, //x
                                       this->radius*sinTorus*4.22, //y
                                       0.f))); //z
-        electrosphere[i]->show(view, projection, models[i]);
+        electrosphere[i]->show(viewPos, lightPos, view, projection, models[i]);
     }
 }

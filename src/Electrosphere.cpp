@@ -65,12 +65,7 @@ Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusT
             }
             this->indices.push_back(squareIdx - toGoFirstTorusSegment);
     }
-    /*
-    this->vbo = new VertexBuffer(this->getVertices(), this->getVertexSize());
-    this->vbo->bind();
-    this->vao = new VertexArray(0,3,0,(const GLvoid*)0);
-    this->ibo = new VertexBuffer(this->getIndices(), this->getIndexSize());
-    */
+
     std::vector<GLfloat> temp;
     for(int i=0;i<vertices.size();i+=3){
         temp.push_back(vertices[i]);
@@ -92,6 +87,8 @@ Electrosphere::~Electrosphere(){
 }
 
 void Electrosphere::show(
+    glm::vec3 viewPos,
+    glm::vec3 lightPos,
     glm::mat4 view,
     glm::mat4 projection,
     glm::mat4 model,
@@ -106,8 +103,8 @@ void Electrosphere::show(
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "mv_matrix"), 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "vm_matrix"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projection));  
-    glUniform3fv(glGetUniformLocation(this->shader_id, "lightPos"), 1, glm::value_ptr(glm::vec3(0.0f, 50.0f, 0.0f)));
-    glUniform3fv(glGetUniformLocation(this->shader_id, "viewPos"), 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 0.0f)));
+    glUniform3fv(glGetUniformLocation(this->shader_id, "lightPos"), 1, glm::value_ptr(lightPos));
+    glUniform3fv(glGetUniformLocation(this->shader_id, "viewPos"), 1, glm::value_ptr(viewPos));
     //std::cout<<"a"<<std::endl;
     this->vao->bind();
     this->ibo->bindElements();

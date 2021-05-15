@@ -40,6 +40,8 @@ class Electrosphere{
         ~Electrosphere();
         //render electrosphere
         void show(
+            glm::vec3 viewPos,
+            glm::vec3 lightPos,
             glm::mat4 view,
             glm::mat4 projection,
             glm::mat4 model,
