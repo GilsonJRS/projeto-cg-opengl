@@ -10,7 +10,7 @@ uniform vec3 viewPos;
 
 void main(){
     //ambient
-    float ambientStrength = 0.2;
+    float ambientStrength = 0.5;
     vec3 ambient = ambientStrength * vec3(1.0f,1.0f,1.0f);
     
     //diffuse
