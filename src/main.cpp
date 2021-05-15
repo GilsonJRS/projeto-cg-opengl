@@ -78,7 +78,7 @@ int main(void)
         return -1;
     }
 
-    Shader shader("shaders/test.vs","shaders/test.fs");
+    Shader shader("shaders/shaderLight.vs","shaders/shaderLight.fs");
     Shader shaderTexture("shaders/texture.vs","shaders/texture.fs");
     Atom atom(shader.getProgramId(), 5, 6, glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
     Texture fundo("../textures/andromedaWallpaper.jpg");
@@ -117,7 +117,7 @@ int main(void)
         */
 
         shader.bind();  
-        atom.show(0, vmMat, projMat, glm::mat4(1.0f));
+        atom.show(camera.getPos(), glm::vec3(0.0f,50.0f,0.0f),0, vmMat, projMat, glm::mat4(1.0f));
         //nucleo.show(vmMat, projMat, glm::mat4(1.0f));
 
         float mouse = 0.1f;
