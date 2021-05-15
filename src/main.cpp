@@ -15,7 +15,7 @@
 #include "../include/Atom.h"
 #include "../include/Nucleus.h"
 #include "../include/Texture.h"
-
+#include "../include/Text.h"
 
 //GLEW
 #define GLEW_STATIC
@@ -26,6 +26,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+//freetype
+#include <freetype2/ft2build.h>
+#include FT_FREETYPE_H
 
 //Global Variables
 int gWindowWidth  = 800;
@@ -78,10 +81,12 @@ int main(void)
         return -1;
     }
 
-    Shader shader("shaders/shaderLight.vs","shaders/shaderLight.fs");
-    Shader shaderTexture("shaders/texture.vs","shaders/texture.fs");
+    Shader shader("src/shaders/shaderLight.vs","src/shaders/shaderLight.fs");
+    Shader shaderTexture("src/shaders/texture.vs","src/shaders/texture.fs");
+    Shader shaderText("src/shaders/shaderText.vs", "src/shaders/shaderText.fs");
     Atom atom(shader.getProgramId(), 5, 6, glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
-    Texture fundo("../textures/andromedaWallpaper.jpg");
+    Texture fundo("textures/andromedaWallpaper.jpg");
+    Text text(std::string("resources/Arial.ttf"));
     //Nucleus nucleo(shader.getProgramId(), 1, 20, 20);
 
     while (!glfwWindowShouldClose(gWindow))
@@ -115,9 +120,12 @@ int main(void)
         mvStack.push(mvStack.top());
         mvStack.top() *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));//position
         */
-
+        shaderText.bind();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        text.renderText(vmMat, projMat, glm::mat4(1.0f), shaderText.getProgramId(), std::string("Mercurio"), 30.0f, 0.1, glm::vec3(1.0f,1.0f,1.0f));
         shader.bind();  
-        atom.show(camera.getPos(), glm::vec3(0.0f,50.0f,0.0f),0, vmMat, projMat, glm::mat4(1.0f));
+        atom.show(camera.getPos(), glm::vec3(0.0f,20.0f,0.0f),0, vmMat, projMat, glm::mat4(1.0f));
         //nucleo.show(vmMat, projMat, glm::mat4(1.0f));
 
         float mouse = 0.1f;
@@ -142,6 +150,7 @@ bool initOpenGL()
         return false;
     }
     
+    glfwWindowHint(GLFW_SAMPLES, 10);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -174,6 +183,8 @@ bool initOpenGL()
     //glfwSetInputMode(gWindow, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
     //glfwSetMouseButtonCallback(gWindow, mouse_button_callback);
     //glfwSetCursorEnterCallback(gWindow, cursorEnterCallBack);
+    glEnable(GL_MULTISAMPLE);
+
     return true;
 }
 

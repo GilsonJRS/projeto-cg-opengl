@@ -27,3 +27,8 @@ void VertexBuffer::bind(){
 void VertexBuffer::bindElements(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vertex_buffer_id);
 }
+
+void VertexBuffer::bufferData(const GLvoid* data,GLuint size){
+    this->bind();
+    glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
+}
