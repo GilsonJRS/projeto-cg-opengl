@@ -19,6 +19,7 @@ Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusT
             this->vertices.push_back((radiusAtom + radiusTube*cosTube)*cosTorus*1.22); //x. 1,22 vezes maior que o raio do Atomo
             this->vertices.push_back((radiusAtom + radiusTube*cosTube)*sinTorus*4.22); //y. 4,22 vezes maior que o raio do Atomo
             this->vertices.push_back(radiusTube*sinTube); //z. Espessura da órbita dos elétrons
+            
         }
     }
 
@@ -101,7 +102,7 @@ void Electrosphere::show(
     glm::vec3 rotate,
     GLfloat rotate_degree
 ){
-    model = glm::rotate(model, glm::radians(rotate_degree), rotate);
+    //model = glm::rotate(model, glm::radians(rotate_degree), rotate);
     model = glm::scale(model, scale);
     model = glm::translate(model, translate);  
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "mv_matrix"), 1, GL_FALSE, glm::value_ptr(model));

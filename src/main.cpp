@@ -80,7 +80,7 @@ int main(void)
 
     Shader shader("shaders/test.vs","shaders/test.fs");
     Shader shaderTexture("shaders/texture.vs","shaders/texture.fs");
-    Atom atom(shader.getProgramId(), 5, 1, glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
+    Atom atom(shader.getProgramId(), 5, 6, glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
     Texture fundo("../textures/andromedaWallpaper.jpg");
     //Nucleus nucleo(shader.getProgramId(), 1, 20, 20);
 

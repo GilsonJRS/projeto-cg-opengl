@@ -31,6 +31,8 @@ class Electrosphere{
         std::vector<GLuint> indices;
         std::vector<GLfloat> vertices;
         std::vector<GLfloat> normals;
+        std::vector<GLfloat> elipseEletrosfera;
+
         VertexBuffer *vbo, *ibo;
         VertexArray *vao;
     public:
@@ -41,7 +43,7 @@ class Electrosphere{
             glm::mat4 view,
             glm::mat4 projection,
             glm::mat4 model,
-            glm::vec3 translate = glm::vec3(1.0f),
+            glm::vec3 translate = glm::vec3(0.f),
             glm::vec3 scale = glm::vec3(1.0f),
             glm::vec3 rotate = glm::vec3(1.0f),
             GLfloat rotate_degree = 0.0f 

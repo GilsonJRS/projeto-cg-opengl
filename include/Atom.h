@@ -28,6 +28,8 @@ class Atom{
         unsigned int shader_id;
         GLuint numElectrons;
         Sphere nucleus;
+        GLfloat radius;
+        GLfloat graus2TranslateEletron = 0.f; //
         std::vector<Sphere *> electrons;
         std::vector<Electrosphere *> electrosphere;
         std::vector<glm::mat4> models;
