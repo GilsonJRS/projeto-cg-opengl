@@ -101,8 +101,8 @@ void Electrosphere::show(
     GLfloat rotate_degree
 ){
     //model = glm::rotate(model, glm::radians(rotate_degree), rotate);
-    //model = glm::scale(model, scale);
-    //model = glm::translate(model, translate);  
+    model = glm::scale(model, scale);
+    model = glm::translate(model, translate);  
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "mv_matrix"), 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "vm_matrix"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projection));  
