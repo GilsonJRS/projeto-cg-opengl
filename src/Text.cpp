@@ -7,7 +7,6 @@ Text::Text(std::string font){
     this->vbo->bufferData(NULL, sizeof(GLfloat)*6*4);
     this->vao->attribPointer(0, 4, 4*sizeof(GLfloat), 0);
 
-    std::cout<<font<<"\n";
     FT_Library ft;
     if (FT_Init_FreeType(&ft))
     {
