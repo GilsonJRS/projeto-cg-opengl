@@ -60,9 +60,20 @@ Sphere::Sphere(GLuint program, GLfloat radius,GLfloat verticalResolution, GLfloa
     this->vao = new VertexArray(0,3,0,(const GLvoid*)0);
     this->ibo = new VertexBuffer(this->getIndices(), this->getIndexSize());
     */
-    this->vbo = new VertexBuffer(this->getVertices(), this->getVertexSize());
+    std::vector<GLfloat> temp;
+    //std::cout<<vertices.size()<<" "<<normals.size()<<std::endl;
+    for(int i=0;i<vertices.size()-3;i+=3){
+        temp.push_back(vertices[i]);
+        temp.push_back(vertices[i+1]);
+        temp.push_back(vertices[i+2]);
+        temp.push_back(normals[i]);
+        temp.push_back(normals[i+1]);
+        temp.push_back(normals[i+2]);
+    }
+    this->vbo = new VertexBuffer(temp.data(), temp.size()*sizeof(GLfloat));
     this->vbo->bind();
-    this->vao = new VertexArray(0,3,0,(const GLvoid*)0);
+    this->vao = new VertexArray(0,3,sizeof(GLfloat)*6,(const GLvoid*)0);
+    this->vao->attribPointer(1, 3, sizeof(GLfloat)*6, (const GLvoid*)(sizeof(GLfloat)*3));
     this->ibo = new VertexBuffer(this->getIndices(), this->getIndexSize());
 }
 
@@ -85,6 +96,10 @@ void Sphere::show(
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "vm_matrix"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projection));  
     glUniform3fv(glGetUniformLocation(this->shader_id, "color"), 1, glm::value_ptr(this->color));
+    glUniform3fv(glGetUniformLocation(this->shader_id, "lightPos"), 1, glm::value_ptr(glm::vec3(0.0f, 50.0f, 0.0f)));
+    glUniform3fv(glGetUniformLocation(this->shader_id, "viewPos"), 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 0.0f)));
+
+
     //std::cout<<"a"<<std::endl;
     this->vao->bind();
     this->ibo->bindElements();

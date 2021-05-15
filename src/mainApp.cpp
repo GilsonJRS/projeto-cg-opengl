@@ -48,7 +48,7 @@ int main(void)
         return -1;
     }
 
-    Shader shader("src/shaders/test.vs","src/shaders/test.fs");
+    Shader shader("src/shaders/shaderLight.vs","src/shaders/shaderLight.fs");
     Atom atom(shader.getProgramId(), 3, 6, glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
     //Nucleus nucleo(shader.getProgramId(), 1, 20, 20);
     glClearColor(0.23f, 0.38f, 0.47f, 1.0f);

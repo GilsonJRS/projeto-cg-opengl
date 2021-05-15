@@ -6,7 +6,7 @@
 Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusTube, GLfloat passTorus, GLfloat passTube){
     //shader program
     this->shader_id = program;
-    glm::vec3 p1, p2, p3,u, v, n;
+    glm::vec3 n;
     GLfloat l;
     //generating electrosphere
     for(GLfloat grausTorus = 0.f; grausTorus < 360.f; grausTorus += passTorus) {
@@ -19,29 +19,13 @@ Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusT
             this->vertices.push_back((radiusAtom + radiusTube*cosTube)*cosTorus*1.22); //x. 1,22 vezes maior que o raio do Atomo
             this->vertices.push_back((radiusAtom + radiusTube*cosTube)*sinTorus*4.22); //y. 4,22 vezes maior que o raio do Atomo
             this->vertices.push_back(radiusTube*sinTube); //z. Espessura da órbita dos elétrons
+
+            n = glm::vec3(cosTorus*cosTube,sinTorus*cosTube,sinTube);
+            n=glm::normalize(n);
+            this->normals.push_back(n.x);
+            this->normals.push_back(n.y);
+            this->normals.push_back(n.z);
         }
-    }
-
-    for(int i=0;i<this->vertices.size()-9;i+=9){
-        p1 = glm::vec3(vertices[i], vertices[i+1], vertices[i+2]);
-        p2 = glm::vec3(vertices[i+3], vertices[i+4], vertices[i+5]);
-        p3 = glm::vec3(vertices[i+6], vertices[i+7], vertices[i+8]);
-        
-        u = p2 - p1;
-        v = p3 - p1;
-
-        n.x = (u.y * v.z) - (u.z * v.y);
-        n.y = (u.z * v.x) - (u.x * v.z);
-        n.z = (u.x * v.y) - (u.y * v.x);
-
-        l = (GLfloat)glm::sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-        n.x /= l;
-        n.y /= l;
-        n.y /= l;
-
-        normals.push_back(n.x);
-        normals.push_back(n.y);
-        normals.push_back(n.z);
     }
 
     int squaresPerSegment = (int)(360.f/passTube);
@@ -81,10 +65,25 @@ Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusT
             }
             this->indices.push_back(squareIdx - toGoFirstTorusSegment);
     }
-    
+    /*
     this->vbo = new VertexBuffer(this->getVertices(), this->getVertexSize());
     this->vbo->bind();
     this->vao = new VertexArray(0,3,0,(const GLvoid*)0);
+    this->ibo = new VertexBuffer(this->getIndices(), this->getIndexSize());
+    */
+    std::vector<GLfloat> temp;
+    for(int i=0;i<vertices.size();i+=3){
+        temp.push_back(vertices[i]);
+        temp.push_back(vertices[i+1]);
+        temp.push_back(vertices[i+2]);
+        temp.push_back(normals[i]);
+        temp.push_back(normals[i+1]);
+        temp.push_back(normals[i+2]);
+    }
+    this->vbo = new VertexBuffer(temp.data(), temp.size()*sizeof(GLfloat));
+    this->vbo->bind();
+    this->vao = new VertexArray(0,3,sizeof(GLfloat)*6,(const GLvoid*)0);
+    this->vao->attribPointer(1, 3, sizeof(GLfloat)*6, (const GLvoid*)(sizeof(GLfloat)*3));
     this->ibo = new VertexBuffer(this->getIndices(), this->getIndexSize());
 }
 
@@ -101,12 +100,14 @@ void Electrosphere::show(
     glm::vec3 rotate,
     GLfloat rotate_degree
 ){
-    model = glm::rotate(model, glm::radians(rotate_degree), rotate);
-    model = glm::scale(model, scale);
-    model = glm::translate(model, translate);  
+    //model = glm::rotate(model, glm::radians(rotate_degree), rotate);
+    //model = glm::scale(model, scale);
+    //model = glm::translate(model, translate);  
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "mv_matrix"), 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "vm_matrix"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projection));  
+    glUniform3fv(glGetUniformLocation(this->shader_id, "lightPos"), 1, glm::value_ptr(glm::vec3(0.0f, 50.0f, 0.0f)));
+    glUniform3fv(glGetUniformLocation(this->shader_id, "viewPos"), 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 0.0f)));
     //std::cout<<"a"<<std::endl;
     this->vao->bind();
     this->ibo->bindElements();
