@@ -84,7 +84,9 @@ int main(void)
     Shader shader("src/shaders/shaderLight.vs","src/shaders/shaderLight.fs");
     Shader shaderTexture("src/shaders/texture.vs","src/shaders/texture.fs");
     Shader shaderText("src/shaders/shaderText.vs", "src/shaders/shaderText.fs");
-    Atom atom(shader.getProgramId(), 5, 6, glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
+    std::vector<GLuint> eletronsPerLayer = {2,8,18,12,1};
+    Atom atom(shader.getProgramId(), "O", "Oxygen", 9, 41, eletronsPerLayer, 
+              glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
     Texture fundo("textures/andromedaWallpaper.jpg");
     Text text(std::string("resources/Arial.ttf"));
     //Nucleus nucleo(shader.getProgramId(), 1, 20, 20);
