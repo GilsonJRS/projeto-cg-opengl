@@ -2,7 +2,7 @@
 
 Camera::Camera(GLfloat aspect){
     this->viewportAspectRatio = aspect;
-    this->cameraPosition = glm::vec3(0.0f, 0.0f,  29.0f);
+    this->cameraPosition = glm::vec3(0.0f, 10.0f,  110.0f);
     this->cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
     this->cameraUp = glm::vec3(0.0f, 1.0f,  0.0f);
     this->FOV = 60.0f;

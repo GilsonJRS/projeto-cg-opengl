@@ -13,6 +13,7 @@
 //CPP libs
 #include <vector>
 #include <cstdlib>
+#include <string>
 //GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -22,6 +23,8 @@
 #include "../include/VertexBuffer.h"
 #include "../include/Sphere.h"
 #include "../include/Electrosphere.h"
+#include "../include/Text.h"
+#include "../include/Shader.h"
 
 class Atom{
     private:
@@ -32,6 +35,7 @@ class Atom{
         GLuint numElectrons;
         Sphere nucleus;
         GLfloat radius;
+        GLfloat atomicMass;
         GLfloat graus2TranslateEletron = 0.f; //
         std::vector<Sphere *> electrons;
         std::vector<Electrosphere *> electrosphere;
@@ -41,6 +45,7 @@ class Atom{
             GLuint program,
             std::string initials,
             std::string name,
+            GLfloat atomicMass,
             GLfloat nucleusRadius,
             GLuint numElectrons,
             std::vector<GLuint> eletronsPerLayer,    
@@ -58,6 +63,9 @@ class Atom{
             glm::mat4 view,
             glm::mat4 projection,
             glm::mat4 model,
+            Text &textRender,
+            Shader &shaderAtom,
+            Shader &shaderText,
             glm::vec3 translate = glm::vec3(0.f),
             glm::vec3 scale = glm::vec3(1.0f),
             glm::vec3 rotate = glm::vec3(1.0f),

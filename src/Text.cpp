@@ -78,7 +78,7 @@ void Text::renderText(
     glUniform3f(glGetUniformLocation(shader, "textColor"), color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
     this->vao->bind();
-    float x = (-(float)text.length()/2.0f)*2.5f;
+    float x = (-(float)text.length()/2.0f)*2.3f;
     std::string::const_iterator c;
     for(c = text.begin(); c!=text.end();c++){
         Character ch = this->Characters[*c];

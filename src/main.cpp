@@ -4,6 +4,8 @@
 #include <fstream>
 #include <stack>
 #include <vector>
+#include <sstream>
+#include <tuple>
 
 //Our libraries
 #include "../include/Shader.h"
@@ -36,10 +38,14 @@ int gWindowHeight = 600;
 const char* TITLE = {"Atom model"};
 GLFWwindow* gWindow = NULL;
 std::stack<glm::mat4> mvStack;
-GLuint mvLoc, vmLoc, projLoc;
+GLuint mvLoc, vmLoc, projLoc, principalShader;
 Camera camera((GLfloat)gWindowWidth/(GLfloat)gWindowHeight);
 bool update = false;
+int actual=0;
 
+Atom *atom;
+std::vector<Atom *> atoms;
+std::vector<std::tuple<std::string, std::string, GLfloat, GLuint, std::vector<GLuint>>> data;
 
 bool initOpenGL();
 void glfw_key(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -81,15 +87,62 @@ int main(void)
         return -1;
     }
 
+    //objects shader
     Shader shader("src/shaders/shaderLight.vs","src/shaders/shaderLight.fs");
+    principalShader = shader.getProgramId();
+    //shader for texture of background
     Shader shaderTexture("src/shaders/texture.vs","src/shaders/texture.fs");
+    //shader for text
     Shader shaderText("src/shaders/shaderText.vs", "src/shaders/shaderText.fs");
-    std::vector<GLuint> eletronsPerLayer = {2,8,18,12,1};
-    Atom atom(shader.getProgramId(), "O", "Oxygen", 9, 41, eletronsPerLayer, 
-              glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f),glm::vec3(0.0f, 0.0f, 1.0f));
     Texture fundo("textures/andromedaWallpaper.jpg");
     Text text(std::string("resources/Arial.ttf"));
-    //Nucleus nucleo(shader.getProgramId(), 1, 20, 20);
+    
+    std::ifstream file("resources/atomsDB.csv");
+    std::string line, word, initial, name, weight, numElectron;
+    int controller = 0;
+    while(std::getline(file,line)){
+        std::vector<GLuint> electronsPerLayer;
+        controller = 0;
+        std::stringstream parser(line);
+        while(std::getline(parser, word, ',')){
+            switch (controller){
+                case 0:
+                    initial = word;
+                    break;
+                case 1:
+                    name = word;
+                    break;
+                case 2:
+                    weight = word;
+                    break;
+                case 3:
+                    numElectron = word;
+                    break;
+                default:
+                    electronsPerLayer.push_back(std::stoi(word));
+                    break;
+            }
+            controller++;
+        }
+        data.push_back(std::make_tuple(initial, name, std::stof(weight), std::stoi(numElectron), electronsPerLayer));
+    }
+    file.close();
+    atoms.resize(118, NULL);
+    atoms[0] = 
+    new Atom(
+        shader.getProgramId(),
+        std::get<0>(data[actual]),
+        std::get<1>(data[actual]),
+        std::get<2>(data[actual]),
+        //NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
+        ( ( ( std::get<2>(data[actual]) - std::get<2>(data[0]) ) * (15.0f - 5.0f) ) / ( std::get<2>(data[117]) - std::get<2>(data[0]) ) ) + 5.0f,
+        std::get<3>(data[actual]),
+        std::get<4>(data[actual]),
+        glm::vec3(0.0f,0.0f,1.0f),
+        glm::vec3(1.0f,1.0f,1.0f),
+        glm::vec3(1.0f,0.0f,0.0f)
+    );
+    atom = atoms[actual];
 
     while (!glfwWindowShouldClose(gWindow))
     {
@@ -99,6 +152,9 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
 
         //build camera
         glm::mat4 vmMat = camera.getViewMatrix();
@@ -114,22 +170,10 @@ int main(void)
         glUniformMatrix4fv(glGetUniformLocation(shaderTexture.getProgramId(), "mv_matrix"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shaderTexture.getProgramId(), "vm_matrix"), 1, GL_FALSE, glm::value_ptr(vmMat));
         glUniformMatrix4fv(glGetUniformLocation(shaderTexture.getProgramId(), "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projMat));  
-        //glUniform3fv(glGetUniformLocation(shaderTexture.getProgramId(), "colorSet"), 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 0.0f)));  
         drawBackground(fundo, 400.f, 711.45f); //711 e 400 Textura escalonada proporcionalmente
         
-        mvStack.push(glm::mat4(1.0f));
-        /*mvStack.top() *= glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));//rotation
-        mvStack.push(mvStack.top());
-        mvStack.top() *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));//position
-        */
-        shaderText.bind();
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        text.renderText(vmMat, projMat, glm::mat4(1.0f), shaderText.getProgramId(), std::string("Mercurio"), 30.0f, 0.1, glm::vec3(1.0f,1.0f,1.0f));
-        shader.bind();  
-        atom.show(camera.getPos(), glm::vec3(0.0f,20.0f,0.0f),0, vmMat, projMat, glm::mat4(1.0f));
-        //nucleo.show(vmMat, projMat, glm::mat4(1.0f));
-
+        atom->show(camera.getPos(), glm::vec3(0.0f,50.0f,0.0f),0, vmMat, projMat, glm::mat4(1.0f), text, shader, shaderText);
+        
         float mouse = 0.1f;
         double mouseX, mouseY;
         glfwGetCursorPos(gWindow, &mouseY, &mouseX);
@@ -212,6 +256,36 @@ void glfw_key(GLFWwindow *window, int key, int scancode, int action, int mode){
     if(((key == GLFW_KEY_D && action == GLFW_REPEAT)||
         (key == GLFW_KEY_D && action == GLFW_PRESS)))
         camera.updatePos(glm::vec3(1.0f,0.0f, 0.0f));   
+
+    
+    if(((key == GLFW_KEY_RIGHT && action == GLFW_REPEAT)||
+        (key == GLFW_KEY_RIGHT && action == GLFW_PRESS))){
+        if(actual < 117)
+            actual++;
+        if(atoms[actual]==NULL){
+            atoms[actual] = 
+                new Atom(
+                    principalShader,
+                    std::get<0>(data[actual]),
+                    std::get<1>(data[actual]),
+                    std::get<2>(data[actual]),
+                    ( ( ( std::get<2>(data[actual]) - std::get<2>(data[0]) ) * (15.0f - 5.0f) ) / ( std::get<2>(data[117]) - std::get<2>(data[0]) ) ) + 5.0f,
+                    std::get<3>(data[actual]),
+                    std::get<4>(data[actual]),
+                    glm::vec3(0.0f,0.0f,1.0f),
+                    glm::vec3(1.0f,1.0f,1.0f),
+                    glm::vec3(1.0f,0.0f,0.0f)
+                );
+        }
+        atom=atoms[actual];
+    }
+        
+    if(((key == GLFW_KEY_LEFT && action == GLFW_REPEAT)||
+        (key == GLFW_KEY_LEFT && action == GLFW_PRESS))){
+        if(actual > 0)
+            actual--; 
+        atom=atoms[actual];
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){

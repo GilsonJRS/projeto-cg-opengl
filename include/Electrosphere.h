@@ -32,11 +32,18 @@ class Electrosphere{
         std::vector<GLfloat> vertices;
         std::vector<GLfloat> normals;
         std::vector<GLfloat> elipseEletrosfera;
-
+        glm::vec3 color;
         VertexBuffer *vbo, *ibo;
         VertexArray *vao;
     public:
-        Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusTube, GLfloat passTorus, GLfloat passTube);
+        Electrosphere(
+            GLuint program, 
+            GLfloat radiusAtom, 
+            GLfloat radiusTube, 
+            GLfloat passTorus, 
+            GLfloat passTube,
+            glm::vec3 color=glm::vec3(1.0f,1.0f,1.0f)
+        );
         ~Electrosphere();
         //render electrosphere
         void show(

@@ -3,7 +3,9 @@
 #include "../include/VertexBuffer.h"
 #include <cmath>
 
-Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusTube, GLfloat passTorus, GLfloat passTube){
+Electrosphere::Electrosphere(GLuint program, GLfloat radiusAtom, GLfloat radiusTube, GLfloat passTorus, GLfloat passTube,
+glm::vec3 color){
+    this->color = color;
     //shader program
     this->shader_id = program;
     glm::vec3 n;
@@ -102,7 +104,8 @@ void Electrosphere::show(
     model = glm::translate(model, translate);  
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "mv_matrix"), 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "vm_matrix"), 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projection));  
+    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projection));
+    glUniform3fv(glGetUniformLocation(this->shader_id, "color"), 1, glm::value_ptr(this->color));  
     glUniform3fv(glGetUniformLocation(this->shader_id, "lightPos"), 1, glm::value_ptr(lightPos));
     glUniform3fv(glGetUniformLocation(this->shader_id, "viewPos"), 1, glm::value_ptr(viewPos));
     //std::cout<<"a"<<std::endl;
