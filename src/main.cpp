@@ -35,7 +35,7 @@
 //Global Variables
 int gWindowWidth  = 800;
 int gWindowHeight = 600;
-const char* TITLE = {"Atom model"};
+const char* TITLE = {"Rutherford model"};
 GLFWwindow* gWindow = NULL;
 std::stack<glm::mat4> mvStack;
 GLuint mvLoc, vmLoc, projLoc, principalShader;

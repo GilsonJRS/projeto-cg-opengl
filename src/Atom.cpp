@@ -68,7 +68,7 @@ void Atom::show(
     shaderAtom.bind();
     nucleus.show(viewPos, lightPos,view, projection, model);
     
-    this->graus2TranslateEletron = (this->graus2TranslateEletron + 8.f == 360.f) ? 0.f : this->graus2TranslateEletron + 8.f; 
+    this->graus2TranslateEletron = (this->graus2TranslateEletron + 1.f == 360.f) ? 0.f : this->graus2TranslateEletron + 1.f; 
 
     for(int i=0; i < this->eletronsPerLayer.size(); i++){
         electrosphere[i]->show(viewPos, lightPos, view, projection, models[i]);
